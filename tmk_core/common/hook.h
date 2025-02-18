@@ -76,5 +76,6 @@ void hook_keyboard_leds_change(uint8_t led_status);
 /* Default behaviour: do nothing. */
 void hook_bootmagic(void);
 
-
+/* Called on nkro change event. */
+void hook_nkro_change(void) ;
 #endif /* _HOOKS_H_ */

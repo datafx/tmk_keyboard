@@ -14,6 +14,7 @@ Copyright 2016 Jun Wako <wakojun@gmail.com>
 // Universal map table: 8x16=128key
 #define UNIMAP_ROWS 8
 #define UNIMAP_COLS 16
+keypos_t unimap_translate(keypos_t key);
 
 /* Universal 128-key keyboard layout(8x16)
         ,-----------------------------------------------.
@@ -28,9 +29,9 @@ Copyright 2016 Jun Wako <wakojun@gmail.com>
 |-----------------------------------------------------------| `-----------' |---------------|
 |CapsL |  A|  S|  D|  F|  G|  H|  J|  K|  L|  ;|  '|  #|Entr|               |  4|  5|  6|KP,|
 |-----------------------------------------------------------|     ,---.     |---------------|
-|Shft|  <|  Z|  X|  C|  V|  B|  N|  M|  ,|  .|  /| RO|Shift |     |Up |     |  1|  2|  3|Ent|
+|Shft|  <|  Z|  X|  C|  V|  B|  N|  M|  ,|  .|  /| RO|Shift |     |Up |     |  1|  2|  3|KP=|
 |-----------------------------------------------------------| ,-----------. |---------------|
-|Ctl|Gui|Alt|MHEN|     Space      |HENK|KANA|Alt|Gui|App|Ctl| |Lef|Dow|Rig| |  0    |  .|KP=|
+|Ctl|Gui|Alt|MHEN|     Space      |HENK|KANA|Alt|Gui|App|Ctl| |Lef|Dow|Rig| |  0    |  .|Ent|
 `-----------------------------------------------------------' `-----------' `---------------'
 App:         Windows Menu key
 Gui:         Windows key, Mac ⌘ key or Meta key
@@ -73,25 +74,16 @@ https://en.wikipedia.org/wiki/Keyboard_layout#Hangul_.28for_Korean.29
       AC_##K78, AC_##K79, AC_##K7A, AC_##K7B, AC_##K7C, AC_##K7D, AC_##K7E, AC_##K7F }  /* 78-7F */ \
 }
 
-
-/* Matrix poision for Universal 128-key keyboard
-        ,-----------------------------------------------.
-        | 68| 69| 6A| 6B| 6C| 6D| 6E| 6F| 70| 71| 72| 73|
-,---.   |-----------------------------------------------|     ,-----------.     ,-----------.
-| 29|   | 3A| 3B| 3C| 3D| 3E| 3F| 40| 41| 42| 43| 44| 45|     | 46| 47| 48|     | 01| 02| 03|
-`---'   `-----------------------------------------------'     `-----------'     `-----------'
-,-----------------------------------------------------------. ,-----------. ,---------------.
-| 35| 1E| 1F| 20| 21| 22| 23| 24| 25| 26| 27| 2D| 2E| 74| 2A| | 49| 4A| 4B| | 53| 54| 55| 56|
-|-----------------------------------------------------------| |-----------| |---------------|
-|   2B| 14| 1A| 08| 15| 17| 1C| 18| 0C| 12| 13| 2F| 30|   31| | 4C| 4D| 4E| | 5F| 60| 61| 57|
-|-----------------------------------------------------------| `-----------' |---------------|
-|    39| 04| 16| 07| 09| 0A| 0B| 0D| 0E| 0F| 33| 34| 32|  28|               | 5C| 5D| 5E| 66|
-|-----------------------------------------------------------|     ,---.     |---------------|
-|  79| 64| 1D| 1B| 06| 19| 05| 11| 10| 36| 37| 38| 75|    7D|     | 52|     | 59| 5A| 5B| 58|
-|-----------------------------------------------------------| ,-----------. |---------------|
-| 78| 7B| 7A|  77|              2C|  76|  00| 7E| 7F| 65| 7C| | 50| 51| 4F| |     62| 63| 67|
-`-----------------------------------------------------------' `-----------' `---------------'
-*/
+#define UNIMAP_DEFAULT \
+    UNIMAP( \
+                  F13, F14, F15, F16, F17, F18, F19, F20, F21, F22, F23, F24, \
+        ESC,      F1,  F2,  F3,  F4,  F5,  F6,  F7,  F8,  F9,  F10, F11, F12,           PSCR,SLCK,PAUS,         VOLD,VOLU,MUTE, \
+        GRV, 1,   2,   3,   4,   5,   6,   7,   8,   9,   0,   MINS,EQL, JYEN,BSPC,     INS, HOME,PGUP,    NLCK,PSLS,PAST,PMNS, \
+        TAB, Q,   W,   E,   R,   T,   Y,   U,   I,   O,   P,   LBRC,RBRC,     BSLS,     DEL, END, PGDN,    P7,  P8,  P9,  PPLS, \
+        CAPS,A,   S,   D,   F,   G,   H,   J,   K,   L,   SCLN,QUOT,     NUHS,ENT,                         P4,  P5,  P6,  PCMM, \
+        LSFT,NUBS,Z,   X,   C,   V,   B,   N,   M,   COMM,DOT, SLSH,     RO,  RSFT,          UP,           P1,  P2,  P3,  PENT, \
+        LCTL,LGUI,LALT,MHEN,          SPC,           HENK,KANA,RALT,RGUI,APP, RCTL,     LEFT,DOWN,RGHT,    P0,       PDOT,PEQL \
+    )
 // Universal map position codes
 enum unimap_position_codes {
 //  logical name            position(row << 4 | col)
@@ -146,7 +138,7 @@ enum unimap_position_codes {
     UNIMAP_LBRACKET,        // 0x2F
     UNIMAP_RBRACKET,        // 0x30
     UNIMAP_BSLASH,          // 0x31
-    UNIMAP_NONUS_HASH,      // 0x32 ISO UK hash
+    UNIMAP_NONUS_HASH,      // 0x32 ISO UK hasu
     UNIMAP_SCOLON,          // 0x33
     UNIMAP_QUOTE,           // 0x34
     UNIMAP_GRAVE,           // 0x35
